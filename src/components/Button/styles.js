@@ -5,8 +5,7 @@ const BORDER_RADIUS = 4;
 
 export default StyleSheet.create({
     container: {
-        marginTop: 40,
-        width: '90%',
+        marginTop: 30,
     },
     text: {
         fontSize: 16,

@@ -10,6 +10,7 @@ import styles from './styles';
 
 const InputWithTitle = (props) => {
     const { title, err = "" } = props;
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>{title}</Text>

@@ -1,12 +1,13 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 
 const INPUT_HEIGHT = 47;
 const BORDER_RADIUS = 4;
+const WIDTH = (Dimensions.get('window').width / 100) * 90;
 
 export default StyleSheet.create({
     container: {
         backgroundColor: '#fff',
-        width: '90%',
+        width: WIDTH,
     },
     title: {
         fontWeight: 'bold',
@@ -19,7 +20,7 @@ export default StyleSheet.create({
         borderColor: '#7A42F4',
         borderWidth: 1,
         paddingHorizontal: 15,
-        fontSize: 14,
+        fontSize: 16,
     },
     errorText: {
         fontSize: 12,

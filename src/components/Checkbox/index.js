@@ -1,4 +1,4 @@
-import Checkbox from './Checkbox';
+import CheckboxWithText from './CheckboxWithText';
 import styles from './styles';
 
-export { Checkbox, styles };
+export { CheckboxWithText, styles };
