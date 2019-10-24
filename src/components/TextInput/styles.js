@@ -26,5 +26,8 @@ export default StyleSheet.create({
         fontSize: 12,
         color: 'red',
         fontStyle: 'italic',
+    },
+    dropdownContainer: {
+        position: 'relative',
     }
 });

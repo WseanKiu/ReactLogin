@@ -7,8 +7,8 @@ import {
 import PropTypes from 'prop-types';
 import styles from './styles';
 
-const SolidColorButton = ({ text }) => (
-    <TouchableOpacity style={styles.container}>
+const SolidColorButton = ({ text, onPress, disabled = false }) => (
+    <TouchableOpacity style={styles.container} onPress={onPress} disabled={disabled} >
         <View style={styles.button}>
             <Text style={styles.text}>{text}</Text>
         </View>
@@ -17,6 +17,8 @@ const SolidColorButton = ({ text }) => (
 
 SolidColorButton.propTypes = {
     text: PropTypes.string,
+    onPress: PropTypes.func,
+    disabled: PropTypes.bool,
 }
 
 export default SolidColorButton;
