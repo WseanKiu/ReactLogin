@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 
 import { Wrapper } from '../components/Wrapper';
 import { Logo } from '../components/Logo';
-import { InputWithTitle } from '../components/TextInput';
+import { InputWithTitle, InputWithDropdown } from '../components/TextInput';
 import { SolidColorButton } from '../components/Button';
 import { CheckboxWithText } from '../components/Checkbox';
 
@@ -34,12 +34,29 @@ class LoginForm extends Component {
             emailError: false,
             passwordError: false,
             disableButton: false,
+            items: []
         };
     }
 
+    componentWillReceiveProps(nextProps) {
+        const items = [{
+            name: nextProps.email,
+            password: nextProps.password,
+        }];
+
+        this.setState({items: items});
+    }
+
     handleEmailInput = (value) => {
+        console.log(value);
         this.setState({ email: value });
         this.checkEmailField(value);
+    }
+
+    handleSelection = (email, password) => {
+        this.setState({ email: email, password: password });
+        this.checkEmailField(email);
+        this.checkPasswordField(password);
     }
 
     handlePasswordInput = (value) => {
@@ -48,14 +65,16 @@ class LoginForm extends Component {
     }
 
     handleCheckBox = () => {
+        const { email } = this.props;
         const { check } = this.state;
+        console.log(this.props, check);
         this.setState({ check: check ? false : true });
     }
 
     handleSignIn = () => {
         const { email, password, check, emailError, passwordError } = this.state;
-        
-        if(!this.checkEmailField(email) && !this.checkPasswordField(password)) {
+
+        if (!this.checkEmailField(email) && !this.checkPasswordField(password)) {
             alert(`Login Succesful! email ${emailError}, pass ${passwordError}`);
             check ? this.props.dispatch(rememberUserCredentials(email, password)) : null;
             this.setState({ email: "", password: "" })
@@ -64,14 +83,14 @@ class LoginForm extends Component {
 
     checkEmailField = (value) => {
         let error = false;
-        if(value.length === 0 || !value.trim()) {
+        if (value.length === 0 || !value.trim()) {
             this.setState({
-                emailErrorMessage: EMPTY_EMAIL_MESSAGE, 
+                emailErrorMessage: EMPTY_EMAIL_MESSAGE,
                 emailError: true,
                 disableButton: true,
             });
             error = true;
-        } else if(!this.validateTextIfEmail(value)) {
+        } else if (!this.validateTextIfEmail(value)) {
             this.setState({ emailErrorMessage: INVALID_EMAIL_MESSAGE, emailError: true, disableButton: true });
             error = true;
         } else {
@@ -83,10 +102,10 @@ class LoginForm extends Component {
     checkPasswordField = (value) => {
         let error = false;
 
-        if(value.length === 0) {
+        if (value.length === 0) {
             this.setState({ passwordErrorMessage: EMPTY_PASSWORD_MESSAGE, passwordError: true, disableButton: true });
             error = true;
-        } else if(value.length < 6 || value.length > 12) {
+        } else if (value.length < 6 || value.length > 12) {
             this.setState({ passwordErrorMessage: PASSWORD_LENGTH_INVALID_MESSAGE, passwordError: true, disableButton: true });
             error = true;
         } else {
@@ -106,14 +125,13 @@ class LoginForm extends Component {
                 <StatusBar translucent={false} barStyle="light-content" />
                 <KeyboardAvoidingView behavior="padding">
                     <Logo />
-                    <InputWithTitle
-                        title={"Email"}
+                    <InputWithDropdown 
+                        title={"Email"} 
+                        items={this.state.items} 
                         placeholder={"Input email address"}
                         err={this.state.emailErrorMessage}
-                        autoCapitalize={'none'}
-                        keyboardType={"email-address"}
                         onChangeText={this.handleEmailInput}
-                        value={this.state.email} />
+                        selectedItem={this.handleSelection} />
                     <InputWithTitle
                         title={"Password"}
                         placeholder={"Input password"}

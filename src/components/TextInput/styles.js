@@ -6,7 +6,6 @@ const WIDTH = (Dimensions.get('window').width / 100) * 90;
 
 export default StyleSheet.create({
     container: {
-        backgroundColor: '#fff',
         width: WIDTH,
     },
     title: {
@@ -27,7 +26,11 @@ export default StyleSheet.create({
         color: 'red',
         fontStyle: 'italic',
     },
-    dropdownContainer: {
-        position: 'relative',
+    dropdownItemStyle: {
+        padding: 10,
+        marginTop: 2,
+        backgroundColor: '#FAF9F8',
+        borderColor: '#bbb',
+        borderWidth: 1,
     }
 });

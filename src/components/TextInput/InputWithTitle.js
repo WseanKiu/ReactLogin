@@ -14,9 +14,7 @@ const InputWithTitle = (props) => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>{title}</Text>
-            <View style={styles.dropdownContainer}>
             <TextInput style={styles.input} {...props} />
-            </View>
             <Text style={styles.errorText}>{err}</Text>
         </View>
     )
