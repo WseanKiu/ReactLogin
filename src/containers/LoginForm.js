@@ -12,6 +12,7 @@ import { validateEmail } from '../helpers/textValidations';
 
 import { rememberUserCredentials } from '../actions/account';
 
+// THIS IS FOR ERROR PROMPTING
 const EMPTY_EMAIL_MESSAGE = "Email must be filled";
 const EMPTY_PASSWORD_MESSAGE = "Password must be filled";
 const INVALID_EMAIL_MESSAGE = "Invalid email";
@@ -24,6 +25,7 @@ class LoginForm extends Component {
         password: PropTypes.string,
     };
 
+    // initializing state variables
     constructor(props) {
         super(props);
         this.state = {
