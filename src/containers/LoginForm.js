@@ -25,6 +25,7 @@ class LoginForm extends Component {
         password: PropTypes.string,
     };
 
+    // initializing state variables
     constructor(props) {
         super(props);
         this.state = {
