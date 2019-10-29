@@ -10,7 +10,7 @@ import { SolidColorButton } from '../components/Button';
 import { CheckboxWithText } from '../components/Checkbox';
 import { validateEmail } from '../helpers/textValidations';
 
-import { rememberUserCredentials } from '../actions/account';
+import { rememberUserCredentials } from '../redux/accounts/actions/account';
 
 // THIS IS FOR ERROR PROMPTING
 const EMPTY_EMAIL_MESSAGE = "Email must be filled";
