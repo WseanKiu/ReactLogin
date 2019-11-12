@@ -3,8 +3,9 @@ import { StatusBar, KeyboardAvoidingView } from 'react-native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import firebase from 'firebase';
+import Spinner from 'react-native-loading-spinner-overlay';
 
-import { Wrapper } from '../components/Wrapper';
+import { Wrapper, styles } from '../components/Wrapper';
 import { Logo } from '../components/Logo';
 import { InputWithTitle, InputWithDropdown } from '../components/TextInput';
 import { SolidColorButton } from '../components/Button';
@@ -52,7 +53,8 @@ class LoginForm extends Component {
             emailError: false,
             passwordError: false,
             disableButton: false,
-            items: []
+            items: [],
+            spinner: false,
         };
     }
 
@@ -88,45 +90,51 @@ class LoginForm extends Component {
 
     handleSignIn = () => {
         const { email, password } = this.state;
+        this.setState(prevState => ({ spinner: !prevState.spinner }))
 
         if (!this.checkEmailField(email) && !this.checkPasswordField(password)) {
             try {
                 firebase.auth().createUserWithEmailAndPassword(email, password)
-                .catch(error => {
-                    switch(error.code) {
-                        case 'auth/email-already-in-use':
-                            this.firebaseCheckPassword()
-                            break
-                        default:
-                            alert(error)
-                            console.log(error)
-                    }
-                })
+                    .catch(error => {
+                        switch (error.code) {
+                            case 'auth/email-already-in-use':
+                                this.firebaseCheckPassword()
+                                break
+                            default:
+                                alert(error)
+                                console.log(error)
+                        }
+                    })
             } catch (error) {
                 console.log('outcast error' + error)
             }
+        } else {
+            this.setState({ spinner: false })
         }
     }
 
     firebaseCheckPassword = () => {
         const { email, password, check } = this.state;
         firebase.auth().signInWithEmailAndPassword(email, password)
-        .then(() => {
-            alert('Login success!');
-            check ? this.props.dispatch(rememberUserCredentials(email, password)) : null;
-        })
-        .catch(error => {
-            switch(error.code) {
-                case 'auth/wrong-password':
-                    alert('Password Incorrect')
-                    console.log(error)
-                    break
-                default:
-                    alert(error)
-                    console.log(error)
-            }
-        })
-        this.setState({ password: "" })
+            .then(() => {
+                this.setState({ spinner: false })
+                alert('Login success!');
+                check ? this.props.dispatch(rememberUserCredentials(email, password)) : null;
+            })
+            .catch(error => {
+                this.setState({ spinner: false })
+                switch (error.code) {
+                    case 'auth/wrong-password':
+                        alert('Password Incorrect')
+                        console.log(error)
+                        break
+                    default:
+                        alert(error)
+                        console.log(error)
+                }
+            })
+
+        this.setState({ password: '' })
     }
 
     checkEmailField = (value) => {
@@ -167,6 +175,9 @@ class LoginForm extends Component {
             <Wrapper>
                 <StatusBar translucent={false} barStyle="light-content" />
                 <KeyboardAvoidingView behavior="padding">
+                    <Spinner
+                        visible={this.state.spinner}
+                    />
                     <Logo />
                     <InputWithDropdown
                         title={"Email"}
