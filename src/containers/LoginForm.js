@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import { StatusBar, KeyboardAvoidingView } from 'react-native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import firebase from 'firebase';
+import Spinner from 'react-native-loading-spinner-overlay';
 
-import { Wrapper } from '../components/Wrapper';
+import { Wrapper, styles } from '../components/Wrapper';
 import { Logo } from '../components/Logo';
 import { InputWithTitle, InputWithDropdown } from '../components/TextInput';
 import { SolidColorButton } from '../components/Button';
@@ -17,6 +19,20 @@ const EMPTY_EMAIL_MESSAGE = "Email must be filled";
 const EMPTY_PASSWORD_MESSAGE = "Password must be filled";
 const INVALID_EMAIL_MESSAGE = "Invalid email";
 const PASSWORD_LENGTH_INVALID_MESSAGE = "Password length must be 6 - 12 characters";
+
+// Firebase config
+const firebaseConfig = {
+    apiKey: "AIzaSyA7ehvplXXn_Fw8t1iMXwQPVsaTsG3GIDc",
+    authDomain: "reactlogin-4a59a.firebaseapp.com",
+    databaseURL: "https://reactlogin-4a59a.firebaseio.com",
+    projectId: "reactlogin-4a59a",
+    storageBucket: "reactlogin-4a59a.appspot.com",
+    messagingSenderId: "250996716051",
+    appId: "1:250996716051:web:f6c261c882c4083d4645e6",
+    measurementId: "G-5JBCS4CR6T"
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
 
 class LoginForm extends Component {
     static propTypes = {
@@ -37,7 +53,8 @@ class LoginForm extends Component {
             emailError: false,
             passwordError: false,
             disableButton: false,
-            items: []
+            items: [],
+            spinner: false,
         };
     }
 
@@ -47,7 +64,7 @@ class LoginForm extends Component {
             password: nextProps.password,
         }];
 
-        this.setState({items: items});
+        this.setState({ items: items });
     }
 
     handleEmailInput = (value) => {
@@ -72,13 +89,52 @@ class LoginForm extends Component {
     }
 
     handleSignIn = () => {
-        const { email, password, check } = this.state;
+        const { email, password } = this.state;
+        this.setState(prevState => ({ spinner: !prevState.spinner }))
 
         if (!this.checkEmailField(email) && !this.checkPasswordField(password)) {
-            alert('Login success!');
-            check ? this.props.dispatch(rememberUserCredentials(email, password)) : null;
-            this.setState({ email: "", password: "" })
+            try {
+                firebase.auth().createUserWithEmailAndPassword(email, password)
+                    .catch(error => {
+                        switch (error.code) {
+                            case 'auth/email-already-in-use':
+                                this.firebaseCheckPassword()
+                                break
+                            default:
+                                alert(error)
+                                console.log(error)
+                        }
+                    })
+            } catch (error) {
+                console.log('outcast error' + error)
+            }
+        } else {
+            this.setState({ spinner: false })
         }
+    }
+
+    firebaseCheckPassword = () => {
+        const { email, password, check } = this.state;
+        firebase.auth().signInWithEmailAndPassword(email, password)
+            .then(() => {
+                this.setState({ spinner: false })
+                alert('Login success!');
+                check ? this.props.dispatch(rememberUserCredentials(email, password)) : null;
+            })
+            .catch(error => {
+                this.setState({ spinner: false })
+                switch (error.code) {
+                    case 'auth/wrong-password':
+                        alert('Password Incorrect')
+                        console.log(error)
+                        break
+                    default:
+                        alert(error)
+                        console.log(error)
+                }
+            })
+
+        this.setState({ password: '' })
     }
 
     checkEmailField = (value) => {
@@ -119,10 +175,13 @@ class LoginForm extends Component {
             <Wrapper>
                 <StatusBar translucent={false} barStyle="light-content" />
                 <KeyboardAvoidingView behavior="padding">
+                    <Spinner
+                        visible={this.state.spinner}
+                    />
                     <Logo />
-                    <InputWithDropdown 
-                        title={"Email"} 
-                        items={this.state.items} 
+                    <InputWithDropdown
+                        title={"Email"}
+                        items={this.state.items}
                         placeholder={"Input email address"}
                         err={this.state.emailErrorMessage}
                         onChangeText={this.handleEmailInput}
